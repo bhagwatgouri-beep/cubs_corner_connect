@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807635640220",
+    "project_id": "cubs-corner-connect",
+    "storage_bucket": "cubs-corner-connect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807635640220:android:5d69bc5b2e0b16d1a0b259",
+        "android_client_info": {
+          "package_name": "org.swayyam.cubscornerconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdz4cDq0HVUCX8fqS99xiqsbHkwtX34M0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
