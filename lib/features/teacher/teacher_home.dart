@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
 import 'arrival_screen.dart';
 import 'flow_event_screen.dart';
+import 'models/flow_event.dart';
 
 class TeacherHome extends StatefulWidget {
   const TeacherHome({super.key});
@@ -14,21 +15,40 @@ class TeacherHome extends StatefulWidget {
 
 class _TeacherHomeState extends State<TeacherHome> {
   bool _attendanceCompleted = false;
+  int _currentFlowEventIndex = 0;
+
+  FlowEvent get _currentFlowEvent =>
+      FlowEvent.dailyEvents[_currentFlowEventIndex];
 
   Future<void> _openCurrentTask() async {
-    if (_attendanceCompleted) {
-      await Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => const FlowEventScreen(
-            classroomName: 'Nursery A',
-            totalChildren: 28,
-            presentChildren: 28,
-          ),
-        ),
-      );
+    if (!_attendanceCompleted) {
+      await _openArrival();
       return;
     }
 
+    final completed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => FlowEventScreen(
+          event: _currentFlowEvent,
+          classroomName: 'Nursery A',
+          totalChildren: 28,
+          presentChildren: 28,
+        ),
+      ),
+    );
+
+    if (!mounted || completed != true) {
+      return;
+    }
+
+    setState(() {
+      if (_currentFlowEventIndex < FlowEvent.dailyEvents.length - 1) {
+        _currentFlowEventIndex += 1;
+      }
+    });
+  }
+
+  Future<void> _openArrival() async {
     final completed = await Navigator.of(context).push<bool>(
       MaterialPageRoute<bool>(
         builder: (_) => const ArrivalScreen(
@@ -55,10 +75,12 @@ class _TeacherHomeState extends State<TeacherHome> {
 
   @override
   Widget build(BuildContext context) {
-    final taskTitle = _attendanceCompleted ? 'Breakfast' : 'Arrival';
-    final taskEmoji = _attendanceCompleted ? '🍎' : '🏫';
+    final taskTitle =
+        _attendanceCompleted ? _currentFlowEvent.title : 'Arrival';
+    final taskEmoji =
+        _attendanceCompleted ? _currentFlowEvent.emoji : '🏫';
     final taskSubtitle = _attendanceCompleted
-        ? "Today's Menu: Milk • Poha • Banana"
+        ? _formatMenu(_currentFlowEvent)
         : "Today's Arrival";
 
     return Scaffold(
@@ -121,6 +143,14 @@ class _TeacherHomeState extends State<TeacherHome> {
         ),
       ),
     );
+  }
+
+  String _formatMenu(FlowEvent event) {
+    if (event.menuItems.isEmpty) {
+      return 'No Menu';
+    }
+
+    return event.menuItems.join(' • ');
   }
 }
 

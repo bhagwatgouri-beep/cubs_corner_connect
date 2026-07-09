@@ -5,7 +5,7 @@ import '../../../core/theme/text_styles.dart';
 import 'exception_dialog.dart';
 
 class ExceptionTile extends StatelessWidget {
-  final BreakfastException exception;
+  final FlowEventException exception;
 
   const ExceptionTile({
     super.key,
@@ -16,6 +16,7 @@ class ExceptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        dense: true,
         leading: CircleAvatar(
           backgroundColor: AppColors.warning.withValues(alpha: 0.16),
           child: const Icon(

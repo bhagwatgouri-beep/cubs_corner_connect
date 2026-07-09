@@ -2,24 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/text_styles.dart';
+import '../models/flow_event.dart';
 
 class CurrentTaskCard extends StatelessWidget {
-  final String title;
-  final String emoji;
-  final String detailsLabel;
-  final String details;
-  final String completeActionLabel;
+  final FlowEvent event;
   final int exceptionCount;
   final VoidCallback onComplete;
   final VoidCallback onAddException;
 
   const CurrentTaskCard({
     super.key,
-    required this.title,
-    required this.emoji,
-    required this.detailsLabel,
-    required this.details,
-    required this.completeActionLabel,
+    required this.event,
     required this.exceptionCount,
     required this.onComplete,
     required this.onAddException,
@@ -27,6 +20,10 @@ class CurrentTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final menuText = event.menuItems.isEmpty
+        ? 'No Menu'
+        : event.menuItems.join(' • ');
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -44,7 +41,7 @@ class CurrentTaskCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
-                    emoji,
+                    event.emoji,
                     style: const TextStyle(fontSize: 28),
                   ),
                 ),
@@ -60,7 +57,7 @@ class CurrentTaskCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        title,
+                        event.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.textTheme.headlineSmall,
@@ -72,12 +69,12 @@ class CurrentTaskCard extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              detailsLabel,
+              'Menu',
               style: AppTextStyles.textTheme.titleMedium,
             ),
             const SizedBox(height: 6),
             Text(
-              details,
+              menuText,
               style: AppTextStyles.textTheme.bodyLarge,
             ),
             const SizedBox(height: 18),
@@ -87,17 +84,19 @@ class CurrentTaskCard extends StatelessWidget {
                 minimumSize: const Size.fromHeight(58),
               ),
               icon: const Icon(Icons.check_rounded),
-              label: Text(completeActionLabel),
+              label: const Text('Complete Step'),
             ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: onAddException,
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(58),
+            if (event.supportsExceptions) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: onAddException,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(58),
+                ),
+                icon: const Icon(Icons.warning_amber_rounded),
+                label: Text('⚠ Exceptions ($exceptionCount)'),
               ),
-              icon: const Icon(Icons.warning_amber_rounded),
-              label: Text('⚠ Exceptions ($exceptionCount)'),
-            ),
+            ],
           ],
         ),
       ),

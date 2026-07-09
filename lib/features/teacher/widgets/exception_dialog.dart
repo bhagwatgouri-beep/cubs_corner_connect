@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class BreakfastException {
+class FlowEventException {
   final String childName;
   final String reason;
 
-  const BreakfastException({
+  const FlowEventException({
     required this.childName,
     required this.reason,
   });
@@ -27,10 +27,10 @@ class _ExceptionDialogState extends State<ExceptionDialog> {
   ];
 
   static const List<String> _reasons = [
-    "Didn't Eat",
-    'Refused Milk',
-    'Allergy',
-    'Absent',
+    'Did Not Participate',
+    'Partial Completion',
+    'Medical Reason',
+    'Family Request',
   ];
 
   String _selectedChild = _children.first;
@@ -38,7 +38,7 @@ class _ExceptionDialogState extends State<ExceptionDialog> {
 
   void _saveException() {
     Navigator.of(context).pop(
-      BreakfastException(
+      FlowEventException(
         childName: _selectedChild,
         reason: _selectedReason,
       ),
