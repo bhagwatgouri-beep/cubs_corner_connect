@@ -4,6 +4,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
 import 'arrival_screen.dart';
 import 'flow_event_screen.dart';
+import 'memories/memory_capture_screen.dart';
+import 'memories/services/local_memory_store.dart';
 import 'models/flow_event.dart';
 
 class TeacherHome extends StatefulWidget {
@@ -73,6 +75,20 @@ class _TeacherHomeState extends State<TeacherHome> {
     );
   }
 
+  Future<void> _openMemoryCapture() async {
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => const MemoryCaptureScreen(),
+      ),
+    );
+
+    if (!mounted || saved != true) {
+      return;
+    }
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final taskTitle =
@@ -138,6 +154,11 @@ class _TeacherHomeState extends State<TeacherHome> {
                 subtitle: taskSubtitle,
                 onTap: _openCurrentTask,
               ),
+              const SizedBox(height: 12),
+              _MemoryCaptureCard(
+                savedCount: LocalMemoryStore.instance.count,
+                onTap: _openMemoryCapture,
+              ),
             ],
           ),
         ),
@@ -151,6 +172,70 @@ class _TeacherHomeState extends State<TeacherHome> {
     }
 
     return event.menuItems.join(' • ');
+  }
+}
+
+class _MemoryCaptureCard extends StatelessWidget {
+  final int savedCount;
+  final VoidCallback onTap;
+
+  const _MemoryCaptureCard({
+    required this.savedCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.cubsOrange.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.photo_camera_rounded,
+                  color: AppColors.cubsOrange,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Camera',
+                      style: AppTextStyles.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$savedCount memories saved locally',
+                      style: AppTextStyles.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
