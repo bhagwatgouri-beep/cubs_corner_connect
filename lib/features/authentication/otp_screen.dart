@@ -4,7 +4,12 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
 
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+  const OtpScreen({
+    super.key,
+    required this.phoneNumber,
+  });
+
+  final String phoneNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +48,14 @@ class OtpScreen extends StatelessWidget {
                 style: AppTextStyles.textTheme.bodyMedium,
               ),
 
+              const SizedBox(height: 8),
+
+              Text(
+                phoneNumber,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.textTheme.titleMedium,
+              ),
+
               const SizedBox(height: 40),
 
               TextField(
@@ -62,7 +75,8 @@ class OtpScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Dashboard comes next
+                    // Sprint 10.10
+                    // Verify OTP using AuthService
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
@@ -74,8 +88,11 @@ class OtpScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               TextButton(
-                onPressed: () {},
-                child: const Text("Resend Code"),
+                onPressed: () {
+                  // Sprint 10.10
+                  // Resend OTP
+                },
+                child: const Text('Resend Code'),
               ),
             ],
           ),

@@ -4,26 +4,36 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
 import 'otp_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
       appBar: AppBar(
         title: const Text('Parent Login'),
         centerTitle: true,
       ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
               const SizedBox(height: 20),
 
               Image.asset(
@@ -50,6 +60,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 40),
 
               TextField(
+                controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                   labelText: 'Mobile Number',
@@ -61,10 +72,23 @@ class LoginScreen extends StatelessWidget {
 
               ElevatedButton(
                 onPressed: () {
+                  final phone = _phoneController.text.trim();
+
+                  if (phone.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter your mobile number'),
+                      ),
+                    );
+                    return;
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const OtpScreen(),
+                      builder: (_) => OtpScreen(
+                        phoneNumber: phone,
+                      ),
                     ),
                   );
                 },
@@ -73,7 +97,6 @@ class LoginScreen extends StatelessWidget {
                   child: Text('Send OTP'),
                 ),
               ),
-
             ],
           ),
         ),
