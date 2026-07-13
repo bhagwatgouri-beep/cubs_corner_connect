@@ -1,6 +1,10 @@
 import '../models/parent_story_item.dart';
 
 class StoryRepository {
+  StoryRepository._();
+
+  static final StoryRepository instance = StoryRepository._();
+
   final List<ParentStoryItem> _items = [];
 
   void addStoryItem(ParentStoryItem item) {

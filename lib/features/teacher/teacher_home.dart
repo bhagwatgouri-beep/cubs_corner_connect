@@ -7,6 +7,8 @@ import 'flow_event_screen.dart';
 import 'memories/memory_capture_screen.dart';
 import 'memories/services/local_memory_store.dart';
 import 'models/flow_event.dart';
+import '../parent_story/services/parent_message_engine.dart';
+import '../parent_story/services/story_repository.dart';
 
 class TeacherHome extends StatefulWidget {
   const TeacherHome({super.key});
@@ -18,6 +20,7 @@ class TeacherHome extends StatefulWidget {
 class _TeacherHomeState extends State<TeacherHome> {
   bool _attendanceCompleted = false;
   int _currentFlowEventIndex = 0;
+  final ParentMessageEngine _parentMessageEngine = ParentMessageEngine();
 
   FlowEvent get _currentFlowEvent =>
       FlowEvent.dailyEvents[_currentFlowEventIndex];
@@ -43,6 +46,13 @@ class _TeacherHomeState extends State<TeacherHome> {
       return;
     }
 
+    StoryRepository.instance.addStoryItem(
+      _parentMessageEngine.generateStoryItem(
+        eventName: _currentFlowEvent.title,
+        time: DateTime.now(),
+      ),
+    );
+
     setState(() {
       if (_currentFlowEventIndex < FlowEvent.dailyEvents.length - 1) {
         _currentFlowEventIndex += 1;
@@ -63,6 +73,13 @@ class _TeacherHomeState extends State<TeacherHome> {
     if (!mounted || completed != true) {
       return;
     }
+
+    StoryRepository.instance.addStoryItem(
+      _parentMessageEngine.generateStoryItem(
+        eventName: 'Arrival',
+        time: DateTime.now(),
+      ),
+    );
 
     setState(() {
       _attendanceCompleted = true;

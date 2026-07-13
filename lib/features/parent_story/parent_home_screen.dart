@@ -3,46 +3,22 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
 import 'models/parent_story_item.dart';
+import 'services/story_repository.dart';
 import 'widgets/parent_header.dart';
 import 'widgets/todays_highlights.dart';
 
 class ParentHomeScreen extends StatelessWidget {
   const ParentHomeScreen({super.key});
 
-  List<ParentStoryItem> get _sampleHighlights {
-    final now = DateTime.now();
-
-    return [
-      ParentStoryItem(
-        id: 'arrival-${now.microsecondsSinceEpoch}',
-        time: now.subtract(const Duration(minutes: 2)),
-        emoji: '🟢',
-        title: 'Arrived Safely',
-        description: 'Arrived safely at daycare.',
-        sourceEvent: 'Arrival',
-      ),
-      ParentStoryItem(
-        id: 'breakfast-${now.microsecondsSinceEpoch}',
-        time: now.subtract(const Duration(minutes: 32)),
-        emoji: '🍎',
-        title: 'Enjoyed Breakfast',
-        description: 'Enjoyed breakfast.',
-        sourceEvent: 'Breakfast',
-      ),
-      ParentStoryItem(
-        id: 'memory-${now.microsecondsSinceEpoch}',
-        time: now.subtract(const Duration(minutes: 58)),
-        emoji: '📷',
-        title: 'New Memories',
-        description: "New photos from today's activities have been added.",
-        sourceEvent: 'Memory',
-      ),
-    ];
+  List<ParentStoryItem> get _highlights {
+    final items = StoryRepository.instance.getAll().toList();
+    items.sort((a, b) => b.time.compareTo(a.time));
+    return items;
   }
 
   @override
   Widget build(BuildContext context) {
-    final highlights = _sampleHighlights;
+    final highlights = _highlights;
 
     return Scaffold(
       appBar: AppBar(
