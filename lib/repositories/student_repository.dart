@@ -1,13 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../models/student.dart';
 
 class StudentRepository {
-  StudentRepository._();
+  StudentRepository._({
+    FirebaseFirestore? firestore,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance;
 
   static final StudentRepository instance =
   StudentRepository._();
 
-  /// Temporary in-memory data.
-  /// This will be replaced by Firestore in Sprint 14.
+  final FirebaseFirestore _firestore;
+
+  /// Temporary in-memory list.
+  /// This will be removed after the Admin module starts
+  /// saving students into Firestore.
   final List<Student> _students = [
     Student(
       id: 'S001',
@@ -16,7 +23,7 @@ class StudentRepository {
       lastName: 'Bhagwat',
       dateOfBirth: DateTime(2022, 4, 15),
       gender: 'Male',
-      classroomId: 'NURSERY',
+      classroomId: 'Nursery',
       centreId: 'CENTRE01',
       parentIds: const ['P001'],
       profileImageUrl: '',
@@ -56,6 +63,13 @@ class StudentRepository {
     ),
   ];
 
+  CollectionReference<Map<String, dynamic>> get _studentCollection =>
+      _firestore.collection('students');
+
+  // ------------------------
+  // CURRENT APP (In-memory)
+  // ------------------------
+
   List<Student> get students =>
       List.unmodifiable(_students);
 
@@ -84,9 +98,9 @@ class StudentRepository {
           (student) => student.id == updatedStudent.id,
     );
 
-    if (index == -1) return;
-
-    _students[index] = updatedStudent;
+    if (index != -1) {
+      _students[index] = updatedStudent;
+    }
   }
 
   void removeStudent(String id) {
@@ -95,15 +109,34 @@ class StudentRepository {
     );
   }
 
-  void clear() {
-    _students.clear();
-  }
-
   int get totalStudents => _students.length;
 
-  int get totalDaycareStudents =>
-      daycareStudents.length;
+  // ------------------------
+  // FUTURE FIRESTORE METHODS
+  // ------------------------
 
-  int get totalActiveStudents =>
-      activeStudents.length;
+  Future<List<Student>> fetchStudents() async {
+    final snapshot = await _studentCollection.get();
+
+    return snapshot.docs
+        .map(
+          (doc) => Student.fromMap(
+        doc.id,
+        doc.data(),
+      ),
+    )
+        .toList();
+  }
+
+  Future<void> saveStudent(Student student) async {
+    await _studentCollection
+        .doc(student.id)
+        .set(student.toMap());
+  }
+
+  Future<void> deleteStudentFromFirestore(
+      String id,
+      ) async {
+    await _studentCollection.doc(id).delete();
+  }
 }
