@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'features/teacher/teacher_home.dart';
+import 'features/authentication/auth_gate.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 
@@ -23,7 +23,7 @@ class CubsCornerConnectApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cubs Corner Connect',
       theme: AppTheme.lightTheme,
-      home: const TeacherHome(),
+      home: const AuthGate(),
     );
   }
 }
