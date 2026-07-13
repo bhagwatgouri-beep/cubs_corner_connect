@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 
-import '../models/daycare_child.dart';
+import '../../../models/student.dart';
 
 class DaycareCheckInDialog extends StatelessWidget {
-  final List<DaycareChild> children;
+  final List<Student> students;
 
   const DaycareCheckInDialog({
     super.key,
-    required this.children,
+    required this.students,
   });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Select Child'),
+      title: const Text('Select Student'),
       content: SizedBox(
         width: 350,
         height: 400,
         child: ListView.builder(
-          itemCount: children.length,
+          itemCount: students.length,
           itemBuilder: (context, index) {
-            final child = children[index];
+            final student = students[index];
 
             return ListTile(
               leading: const CircleAvatar(
                 child: Icon(Icons.child_care),
               ),
-              title: Text(child.name),
-              subtitle: Text(child.classroom),
+              title: Text(student.fullName),
+              subtitle: Text(student.classroomId),
               onTap: () {
-                Navigator.pop(context, child);
+                Navigator.pop(context, student);
               },
             );
           },

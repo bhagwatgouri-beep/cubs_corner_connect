@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../models/child.dart';
+import '../../../models/child.dart';
 
 class ChildHeader extends StatelessWidget {
   final Child child;

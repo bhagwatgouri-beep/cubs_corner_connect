@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
-import 'repositories/daycare_child_repository.dart';
+import '../../repositories/student_repository.dart';
 import 'repositories/daycare_session_repository.dart';
 import 'widgets/daycare_checkin_dialog.dart';
 
@@ -15,33 +15,38 @@ class TeacherDaycareScreen extends StatefulWidget {
 }
 
 class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
-  final sessionRepository = DaycareSessionRepository.instance;
-  final childRepository = DaycareChildRepository.instance;
+  final DaycareSessionRepository sessionRepository =
+      DaycareSessionRepository.instance;
+
+  final StudentRepository studentRepository =
+      StudentRepository.instance;
 
   Future<void> _checkIn() async {
-    final child = await showDialog(
+    final student = await showDialog(
       context: context,
       builder: (_) => DaycareCheckInDialog(
-        children: childRepository.enrolledChildren,
+        students: studentRepository.daycareStudents,
       ),
     );
 
-    if (child == null) return;
+    if (student == null) return;
 
-    if (sessionRepository.getActiveSession(child.id) != null) {
+    if (sessionRepository.getActiveSession(student.id) != null) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${child.name} is already checked in'),
+          content: Text(
+            '${student.fullName} is already checked in.',
+          ),
         ),
       );
       return;
     }
 
     sessionRepository.checkIn(
-      childId: child.id,
-      childName: child.name,
+      childId: student.id,
+      childName: student.fullName,
     );
 
     setState(() {});
@@ -52,7 +57,9 @@ class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Child checked out successfully'),
+        content: Text(
+          'Student checked out successfully.',
+        ),
       ),
     );
 
@@ -61,10 +68,15 @@ class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final active = sessionRepository.activeSessions;
-    final total = childRepository.enrolledCount;
-    final checkedIn = active.length;
-    final expected = total - checkedIn;
+    final activeSessions = sessionRepository.activeSessions;
+
+    final totalStudents =
+        studentRepository.daycareStudents.length;
+
+    final checkedInStudents = activeSessions.length;
+
+    final expectedStudents =
+        totalStudents - checkedInStudents;
 
     return Scaffold(
       appBar: AppBar(
@@ -73,55 +85,49 @@ class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _checkIn,
         icon: const Icon(Icons.add),
-        label: const Text('Check In Child'),
+        label: const Text('Check In Student'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-
             Row(
               children: [
-
                 Expanded(
                   child: _DashboardCard(
                     title: 'Enrolled',
-                    value: total.toString(),
-                    color: Colors.blue,
+                    value: totalStudents.toString(),
                     icon: Icons.groups,
+                    color: Colors.blue,
                   ),
                 ),
-
                 const SizedBox(width: 12),
-
                 Expanded(
                   child: _DashboardCard(
                     title: 'Present',
-                    value: checkedIn.toString(),
-                    color: Colors.green,
+                    value: checkedInStudents.toString(),
                     icon: Icons.check_circle,
+                    color: Colors.green,
                   ),
                 ),
-
                 const SizedBox(width: 12),
-
                 Expanded(
                   child: _DashboardCard(
                     title: 'Expected',
-                    value: expected.toString(),
-                    color: Colors.orange,
+                    value: expectedStudents.toString(),
                     icon: Icons.schedule,
+                    color: Colors.orange,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Children Currently in Daycare',
+                'Students Currently in Daycare',
                 style: AppTextStyles.textTheme.titleLarge,
               ),
             ),
@@ -129,16 +135,17 @@ class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
             const SizedBox(height: 12),
 
             Expanded(
-              child: active.isEmpty
+              child: activeSessions.isEmpty
                   ? const Center(
                 child: Text(
-                  'No children are currently checked in.',
+                  'No students are currently checked in.',
                 ),
               )
                   : ListView.builder(
-                itemCount: active.length,
+                itemCount: activeSessions.length,
                 itemBuilder: (context, index) {
-                  final session = active[index];
+                  final session =
+                  activeSessions[index];
 
                   return Card(
                     child: ListTile(
@@ -150,7 +157,9 @@ class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      title: Text(session.childName),
+                      title: Text(
+                        session.childName,
+                      ),
                       subtitle: Text(
                         'Checked In: '
                             '${session.checkInTime.hour.toString().padLeft(2, '0')}:'
@@ -158,8 +167,12 @@ class _TeacherDaycareScreenState extends State<TeacherDaycareScreen> {
                       ),
                       trailing: FilledButton(
                         onPressed: () =>
-                            _checkOut(session.childId),
-                        child: const Text('Check Out'),
+                            _checkOut(
+                              session.childId,
+                            ),
+                        child: const Text(
+                          'Check Out',
+                        ),
                       ),
                     ),
                   );
@@ -196,15 +209,12 @@ class _DashboardCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-
             Icon(
               icon,
               color: color,
               size: 32,
             ),
-
             const SizedBox(height: 8),
-
             Text(
               value,
               style: const TextStyle(
@@ -212,9 +222,7 @@ class _DashboardCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 4),
-
             Text(
               title,
               textAlign: TextAlign.center,

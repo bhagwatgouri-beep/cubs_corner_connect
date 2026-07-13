@@ -1,4 +1,4 @@
-import '../models/child.dart';
+import '../../../models/child.dart';
 
 class DashboardController {
   Child getCurrentChild() {
