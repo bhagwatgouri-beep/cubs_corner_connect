@@ -89,3 +89,60 @@ The application reduces teacher workload instead of increasing it.
 ---
 
 End of Chapter 1.
+# Sprint Roadmap
+
+## Sprint 1
+Flutter Project Setup ✅
+
+## Sprint 2
+Firebase Setup ✅
+
+## Sprint 3
+Authentication Structure ✅
+
+## Sprint 4
+Parent Dashboard Prototype ✅
+
+## Sprint 5
+Teacher Home ✅
+
+## Sprint 6
+Arrival Workflow ✅
+
+## Sprint 7
+Generic Flow Engine ✅
+
+## Sprint 8
+Memory Capture Engine ✅
+
+## Sprint 9
+
+9A ParentStoryItem ✅
+
+9B StoryRepository ✅
+
+9C ParentMessageEngine ⏳
+
+9D Today's Highlights Widget
+
+9E Parent Home Screen
+
+## Sprint 10
+
+Firebase Integration
+
+## Sprint 11
+
+Camera Integration
+
+## Sprint 12
+
+Push Notifications
+
+## Sprint 13
+
+Testing & Bug Fixes
+
+## Sprint 14
+
+Launch Preparation
