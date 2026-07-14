@@ -1,5 +1,7 @@
 class AdmissionDraft {
   // Student
+  String studentId = '';
+
   String admissionNumber = '';
   String firstName = '';
   String lastName = '';
@@ -28,4 +30,6 @@ class AdmissionDraft {
   // Health
   String allergies = '';
   String medicalNotes = '';
+
+  bool get isEdit => studentId.isNotEmpty;
 }

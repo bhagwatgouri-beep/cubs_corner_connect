@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../admissions/add_student_screen.dart';
 import '../students/student_directory_screen.dart';
+import '../parents/add_parent_screen.dart';
+import '../parents/parent_directory_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -15,7 +17,6 @@ class AdminDashboardScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-
           const Text(
             "Admissions",
             style: TextStyle(
@@ -48,6 +49,45 @@ class AdminDashboardScreen extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (_) =>
                   const StudentDirectoryScreen(),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 30),
+
+          const Text(
+            "Parents",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          _MenuCard(
+            title: "New Parent",
+            icon: Icons.person_add_alt_1,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AddParentScreen(),
+                ),
+              );
+            },
+          ),
+
+          _MenuCard(
+            title: "Parent Directory",
+            icon: Icons.people,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                  const ParentDirectoryScreen(),
                 ),
               );
             },
