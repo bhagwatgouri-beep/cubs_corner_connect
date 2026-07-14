@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../models/admission_draft.dart';
 import '../../../models/student.dart';
 import '../../../repositories/student_repository.dart';
+import 'steps/additional_step.dart';
+import 'steps/guardian_step.dart';
+import 'steps/review_step.dart';
+import 'steps/student_step.dart';
 
 class AddStudentScreen extends StatefulWidget {
   const AddStudentScreen({super.key});
@@ -11,76 +16,75 @@ class AddStudentScreen extends StatefulWidget {
 }
 
 class _AddStudentScreenState extends State<AddStudentScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final PageController _pageController = PageController();
 
-  final _admissionController = TextEditingController();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _classController = TextEditingController();
+  final AdmissionDraft draft = AdmissionDraft();
 
-  DateTime? _selectedDateOfBirth;
-
-  bool daycare = false;
-  bool transport = false;
+  int _currentStep = 0;
 
   @override
   void initState() {
     super.initState();
 
-    final nextNumber = StudentRepository.instance.students.length + 1;
+    final next = StudentRepository.instance.students.length + 1;
 
-    _admissionController.text =
-    "SEF26${nextNumber.toString().padLeft(4, '0')}";
-
-    _classController.text = "Daycare";
+    draft.admissionNumber =
+    "SEF26${next.toString().padLeft(4, '0')}";
   }
 
   @override
   void dispose() {
-    _admissionController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _classController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDateOfBirth() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().subtract(
-        const Duration(days: 365 * 3),
-      ),
-      firstDate: DateTime(2015),
-      lastDate: DateTime.now(),
+  void _next() {
+    if (_currentStep >= 3) return;
+
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
     );
 
-    if (picked != null) {
-      setState(() {
-        _selectedDateOfBirth = picked;
-      });
+    setState(() {
+      _currentStep++;
+    });
+  }
+
+  void _back() {
+    if (_currentStep == 0) {
+      Navigator.pop(context);
+      return;
     }
+
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
+
+    setState(() {
+      _currentStep--;
+    });
   }
 
   void _save() {
-    if (!_formKey.currentState!.validate()) return;
-
     final student = Student(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      admissionNumber: _admissionController.text,
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      dateOfBirth: _selectedDateOfBirth ?? DateTime.now(),
-      gender: '',
-      classroomId: _classController.text,
-      centreId: 'CENTRE01',
+      admissionNumber: draft.admissionNumber,
+      firstName: draft.firstName,
+      lastName: draft.lastName,
+      dateOfBirth: draft.dateOfBirth ?? DateTime.now(),
+      gender: draft.gender,
+      classroomId: draft.classroomId,
+      centreId: draft.centreId,
       parentIds: const [],
       profileImageUrl: '',
       isActive: true,
-      isDaycareEnrolled: daycare,
-      usesTransport: transport,
+      isDaycareEnrolled: draft.daycare,
+      usesTransport: draft.transport,
       pickupPersons: const [],
-      medicalNotes: '',
-      allergies: '',
+      medicalNotes: draft.medicalNotes,
+      allergies: draft.allergies,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -90,111 +94,91 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     Navigator.pop(context);
   }
 
-  String get _dobText {
-    if (_selectedDateOfBirth == null) {
-      return "Select Date of Birth";
-    }
-
-    final d = _selectedDateOfBirth!;
-
-    return "${d.day.toString().padLeft(2, '0')}/"
-        "${d.month.toString().padLeft(2, '0')}/"
-        "${d.year}";
-  }
-
   @override
   Widget build(BuildContext context) {
+    final titles = const [
+      "Student Details",
+      "Parent / Guardian",
+      "Additional Details",
+      "Review",
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("New Admission"),
+        title: Text(titles[_currentStep]),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _admissionController,
-                readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: "Admission Number",
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(
-                  labelText: "First Name",
-                ),
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? "Required"
-                    : null,
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(
-                  labelText: "Last Name",
-                ),
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? "Required"
-                    : null,
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _classController,
-                readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: "Class",
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text("Date of Birth"),
-                subtitle: Text(_dobText),
-                trailing: const Icon(Icons.calendar_month),
-                onTap: _pickDateOfBirth,
-              ),
-
-              const Divider(),
-
-              SwitchListTile(
-                title: const Text("Daycare Enrolled"),
-                value: daycare,
-                onChanged: (value) {
-                  setState(() {
-                    daycare = value;
-                  });
-                },
-              ),
-
-              SwitchListTile(
-                title: const Text("Uses Transport"),
-                value: transport,
-                onChanged: (value) {
-                  setState(() {
-                    transport = value;
-                  });
-                },
-              ),
-
-              const SizedBox(height: 24),
-
-              FilledButton(
-                onPressed: _save,
-                child: const Text("SAVE"),
-              ),
-            ],
+      body: Column(
+        children: [
+          LinearProgressIndicator(
+            value: (_currentStep + 1) / 4,
           ),
-        ),
+
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Step ${_currentStep + 1} of 4",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                StudentStep(draft: draft),
+                GuardianStep(draft: draft),
+                AdditionalStep(draft: draft),
+                ReviewStep(draft: draft),
+              ],
+            ),
+          ),
+
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _back,
+                        child: Text(
+                          _currentStep == 0
+                              ? "Cancel"
+                              : "Back",
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: _currentStep < 3
+                          ? FilledButton(
+                        onPressed: _next,
+                        child: Text(
+                          _currentStep == 2
+                              ? "Review"
+                              : "Next",
+                        ),
+                      )
+                          : FilledButton.icon(
+                        onPressed: _save,
+                        icon: const Icon(Icons.save),
+                        label: const Text("SAVE"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

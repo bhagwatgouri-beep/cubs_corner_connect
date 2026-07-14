@@ -1,0 +1,31 @@
+class AdmissionDraft {
+  // Student
+  String admissionNumber = '';
+  String firstName = '';
+  String lastName = '';
+  DateTime? dateOfBirth;
+  String gender = '';
+
+  // Guardian 1
+  String guardian1Name = '';
+  String guardian1Relationship = '';
+  String guardian1Mobile = '';
+  String guardian1Email = '';
+
+  // Guardian 2
+  String guardian2Name = '';
+  String guardian2Relationship = '';
+  String guardian2Mobile = '';
+  String guardian2Email = '';
+
+  // School
+  bool daycare = false;
+  bool transport = false;
+
+  String classroomId = 'Daycare';
+  String centreId = 'CENTRE01';
+
+  // Health
+  String allergies = '';
+  String medicalNotes = '';
+}

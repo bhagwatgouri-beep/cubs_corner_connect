@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../models/student.dart';
 import '../../../repositories/student_repository.dart';
 import '../admissions/add_student_screen.dart';
+import 'student_profile_screen.dart';
 
 class StudentDirectoryScreen extends StatefulWidget {
   const StudentDirectoryScreen({super.key});
@@ -29,9 +30,24 @@ class _StudentDirectoryScreenState
     }
   }
 
+  Future<void> _openStudent(Student student) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => StudentProfileScreen(
+          student: student,
+        ),
+      ),
+    );
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Student> students = repository.students;
+    final students = repository.students;
 
     return Scaffold(
       appBar: AppBar(
@@ -59,11 +75,23 @@ class _StudentDirectoryScreenState
               vertical: 6,
             ),
             child: ListTile(
+              onTap: () => _openStudent(student),
               leading: CircleAvatar(
-                child: Text(student.firstName[0]),
+                child: Text(
+                  student.firstName.isEmpty
+                      ? "?"
+                      : student.firstName[0].toUpperCase(),
+                ),
               ),
               title: Text(student.fullName),
-              subtitle: Text(student.classroomId),
+              subtitle: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(student.admissionNumber),
+                  Text(student.classroomId),
+                ],
+              ),
               trailing: student.isDaycareEnrolled
                   ? const Icon(
                 Icons.child_care,
