@@ -64,7 +64,7 @@ class _GuardianStepState extends State<GuardianStep> {
         const SizedBox(height: 16),
 
         DropdownButtonFormField<String>(
-          value: widget.draft.guardian1Relationship.isEmpty
+          initialValue: widget.draft.guardian1Relationship.isEmpty
               ? null
               : widget.draft.guardian1Relationship,
           decoration: const InputDecoration(

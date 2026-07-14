@@ -88,7 +88,7 @@ class _AddParentScreenState extends State<AddParentScreen> {
             const SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
-              value: relationship,
+              initialValue: relationship,
               decoration: const InputDecoration(
                 labelText: "Relationship",
               ),

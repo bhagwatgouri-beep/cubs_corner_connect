@@ -53,7 +53,7 @@ class _ArrivalExceptionDialogState extends State<ArrivalExceptionDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<String>(
-            value: _selectedChild,
+            initialValue: _selectedChild,
             decoration: const InputDecoration(
               labelText: 'Child',
             ),
@@ -77,7 +77,7 @@ class _ArrivalExceptionDialogState extends State<ArrivalExceptionDialog> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedReason,
+            initialValue: _selectedChild,
             decoration: const InputDecoration(
               labelText: 'Reason',
             ),

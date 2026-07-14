@@ -33,6 +33,37 @@ class ParentRepository {
     }
   }
 
+  Parent? getByMobile(String mobile) {
+    try {
+      return _parents.firstWhere(
+            (parent) =>
+        parent.mobileNumber.trim() == mobile.trim(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Parent? getByEmail(String email) {
+    try {
+      return _parents.firstWhere(
+            (parent) =>
+        parent.email.toLowerCase().trim() ==
+            email.toLowerCase().trim(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool mobileExists(String mobile) {
+    return getByMobile(mobile) != null;
+  }
+
+  bool emailExists(String email) {
+    return getByEmail(email) != null;
+  }
+
   void addParent(Parent parent) {
     _parents.add(parent);
   }

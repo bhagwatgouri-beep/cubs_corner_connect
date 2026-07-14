@@ -53,7 +53,7 @@ class _ExceptionDialogState extends State<ExceptionDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<String>(
-            value: _selectedChild,
+            initialValue: _selectedChild,
             decoration: const InputDecoration(
               labelText: 'Child',
             ),
@@ -77,7 +77,7 @@ class _ExceptionDialogState extends State<ExceptionDialog> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedReason,
+            initialValue: _selectedReason,
             decoration: const InputDecoration(
               labelText: 'Reason',
             ),

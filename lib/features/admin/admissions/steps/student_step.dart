@@ -76,9 +76,7 @@ class _StudentStepState extends State<StudentStep> {
             border: OutlineInputBorder(),
           ),
         ),
-
         const SizedBox(height: 16),
-
         TextField(
           controller: _firstNameController,
           decoration: const InputDecoration(
@@ -89,9 +87,7 @@ class _StudentStepState extends State<StudentStep> {
             widget.draft.firstName = value;
           },
         ),
-
         const SizedBox(height: 16),
-
         TextField(
           controller: _lastNameController,
           decoration: const InputDecoration(
@@ -102,9 +98,7 @@ class _StudentStepState extends State<StudentStep> {
             widget.draft.lastName = value;
           },
         ),
-
         const SizedBox(height: 16),
-
         ListTile(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -119,11 +113,9 @@ class _StudentStepState extends State<StudentStep> {
           trailing: const Icon(Icons.calendar_month),
           onTap: _pickDate,
         ),
-
         const SizedBox(height: 16),
-
         DropdownButtonFormField<String>(
-          value: widget.draft.gender.isEmpty
+          initialValue: widget.draft.gender.isEmpty
               ? null
               : widget.draft.gender,
           decoration: const InputDecoration(
