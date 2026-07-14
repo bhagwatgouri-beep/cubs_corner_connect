@@ -22,6 +22,17 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   bool transport = false;
 
   @override
+  void initState() {
+    super.initState();
+
+    final nextNumber =
+        StudentRepository.instance.students.length + 1;
+
+    _admissionController.text =
+    "SEF26${nextNumber.toString().padLeft(4, '0')}";
+  }
+
+  @override
   void dispose() {
     _admissionController.dispose();
     _firstNameController.dispose();
@@ -35,7 +46,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
     final student = Student(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      admissionNumber: _admissionController.text.trim(),
+      admissionNumber: _admissionController.text,
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       dateOfBirth: DateTime.now(),
@@ -56,12 +67,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
     StudentRepository.instance.addStudent(student);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Student added successfully'),
-      ),
-    );
-
     Navigator.pop(context);
   }
 
@@ -79,11 +84,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             children: [
               TextFormField(
                 controller: _admissionController,
+                readOnly: true,
                 decoration: const InputDecoration(
                   labelText: 'Admission Number',
                 ),
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -92,7 +96,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   labelText: 'First Name',
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.trim().isEmpty
+                    ? 'Required'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -101,7 +107,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   labelText: 'Last Name',
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
+                value == null || value.trim().isEmpty
+                    ? 'Required'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
