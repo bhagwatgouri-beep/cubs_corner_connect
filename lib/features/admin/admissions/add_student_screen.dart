@@ -18,6 +18,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   final _lastNameController = TextEditingController();
   final _classController = TextEditingController();
 
+  DateTime? _selectedDateOfBirth;
+
   bool daycare = false;
   bool transport = false;
 
@@ -25,11 +27,12 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   void initState() {
     super.initState();
 
-    final nextNumber =
-        StudentRepository.instance.students.length + 1;
+    final nextNumber = StudentRepository.instance.students.length + 1;
 
     _admissionController.text =
     "SEF26${nextNumber.toString().padLeft(4, '0')}";
+
+    _classController.text = "Daycare";
   }
 
   @override
@@ -41,6 +44,23 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     super.dispose();
   }
 
+  Future<void> _pickDateOfBirth() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(
+        const Duration(days: 365 * 3),
+      ),
+      firstDate: DateTime(2015),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDateOfBirth = picked;
+      });
+    }
+  }
+
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
@@ -49,9 +69,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       admissionNumber: _admissionController.text,
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
-      dateOfBirth: DateTime.now(),
+      dateOfBirth: _selectedDateOfBirth ?? DateTime.now(),
       gender: '',
-      classroomId: _classController.text.trim(),
+      classroomId: _classController.text,
       centreId: 'CENTRE01',
       parentIds: const [],
       profileImageUrl: '',
@@ -70,11 +90,23 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     Navigator.pop(context);
   }
 
+  String get _dobText {
+    if (_selectedDateOfBirth == null) {
+      return "Select Date of Birth";
+    }
+
+    final d = _selectedDateOfBirth!;
+
+    return "${d.day.toString().padLeft(2, '0')}/"
+        "${d.month.toString().padLeft(2, '0')}/"
+        "${d.year}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Admission'),
+        title: const Text("New Admission"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -86,41 +118,56 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                 controller: _admissionController,
                 readOnly: true,
                 decoration: const InputDecoration(
-                  labelText: 'Admission Number',
+                  labelText: "Admission Number",
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
+
               TextFormField(
                 controller: _firstNameController,
                 decoration: const InputDecoration(
-                  labelText: 'First Name',
+                  labelText: "First Name",
                 ),
                 validator: (value) =>
                 value == null || value.trim().isEmpty
-                    ? 'Required'
+                    ? "Required"
                     : null,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
+
               TextFormField(
                 controller: _lastNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Last Name',
+                  labelText: "Last Name",
                 ),
                 validator: (value) =>
                 value == null || value.trim().isEmpty
-                    ? 'Required'
+                    ? "Required"
                     : null,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
+
               TextFormField(
                 controller: _classController,
+                readOnly: true,
                 decoration: const InputDecoration(
-                  labelText: 'Classroom',
+                  labelText: "Class",
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Date of Birth"),
+                subtitle: Text(_dobText),
+                trailing: const Icon(Icons.calendar_month),
+                onTap: _pickDateOfBirth,
+              ),
+
+              const Divider(),
+
               SwitchListTile(
-                title: const Text('Daycare Enrolled'),
+                title: const Text("Daycare Enrolled"),
                 value: daycare,
                 onChanged: (value) {
                   setState(() {
@@ -128,8 +175,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   });
                 },
               ),
+
               SwitchListTile(
-                title: const Text('Uses Transport'),
+                title: const Text("Uses Transport"),
                 value: transport,
                 onChanged: (value) {
                   setState(() {
@@ -137,10 +185,12 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   });
                 },
               ),
+
               const SizedBox(height: 24),
+
               FilledButton(
                 onPressed: _save,
-                child: const Text('SAVE'),
+                child: const Text("SAVE"),
               ),
             ],
           ),
