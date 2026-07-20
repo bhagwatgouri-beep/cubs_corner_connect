@@ -22,7 +22,7 @@ class _StudentDirectoryScreenState extends State<StudentDirectoryScreen> {
 
   String _search = '';
   String? _selectedClass;
-  String? _selectedStatus;
+  String? _selectedStatus = 'Active';
 
   Future<void> _openNewAdmission() async {
     await Navigator.push(
@@ -80,7 +80,7 @@ class _StudentDirectoryScreenState extends State<StudentDirectoryScreen> {
           _selectedClass == null || student.classroomId == _selectedClass;
       final matchesStatus = _selectedStatus == null ||
           (_selectedStatus == 'Active' && student.isActive) ||
-          (_selectedStatus == 'Inactive' && !student.isActive);
+          (_selectedStatus == 'Archived' && !student.isActive);
 
       return matchesSearch && matchesClass && matchesStatus;
     }).toList();
@@ -148,15 +148,15 @@ class _StudentDirectoryScreenState extends State<StudentDirectoryScreen> {
                     items: const [
                       DropdownMenuItem(
                         value: null,
-                        child: Text("All Statuses"),
+                        child: Text("All"),
                       ),
                       DropdownMenuItem(
                         value: "Active",
                         child: Text("Active"),
                       ),
                       DropdownMenuItem(
-                        value: "Inactive",
-                        child: Text("Inactive"),
+                        value: "Archived",
+                        child: Text("Archived"),
                       ),
                     ],
                     onChanged: (value) {
