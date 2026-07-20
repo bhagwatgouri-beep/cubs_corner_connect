@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 
+import '../../../models/attendance_record.dart';
+import '../../../repositories/attendance_repository.dart';
 import '../../../repositories/student_repository.dart';
+import 'mark_attendance_screen.dart';
 
-class AttendanceDashboardScreen extends StatelessWidget {
+class AttendanceDashboardScreen extends StatefulWidget {
   const AttendanceDashboardScreen({super.key});
+
+  @override
+  State<AttendanceDashboardScreen> createState() =>
+      _AttendanceDashboardScreenState();
+}
+
+class _AttendanceDashboardScreenState
+    extends State<AttendanceDashboardScreen> {
+  final AttendanceRepository _attendanceRepository =
+      AttendanceRepository.instance;
 
   String _today() {
     final date = DateTime.now();
@@ -16,8 +29,24 @@ class AttendanceDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalActiveStudents = StudentRepository.instance.activeStudents.length;
-    const presentToday = 0;
-    final absentToday = totalActiveStudents;
+
+    final attendance = _attendanceRepository.todayAttendance();
+
+    final presentToday = attendance
+        .where((a) => a.status == AttendanceStatus.present)
+        .length;
+
+    final absentToday = attendance
+        .where((a) => a.status == AttendanceStatus.absent)
+        .length;
+
+    final lateToday = attendance
+        .where((a) => a.status == AttendanceStatus.late)
+        .length;
+
+    final attendancePercentage = totalActiveStudents == 0
+        ? 0
+        : (((presentToday + lateToday) / totalActiveStudents) * 100).round();
 
     return Scaffold(
       appBar: AppBar(
@@ -45,9 +74,9 @@ class AttendanceDashboardScreen extends StatelessWidget {
                 value: totalActiveStudents.toString(),
                 icon: Icons.people,
               ),
-              const _SummaryCard(
+              _SummaryCard(
                 title: 'Present Today',
-                value: '$presentToday',
+                value: presentToday.toString(),
                 icon: Icons.check_circle,
               ),
               _SummaryCard(
@@ -55,16 +84,32 @@ class AttendanceDashboardScreen extends StatelessWidget {
                 value: absentToday.toString(),
                 icon: Icons.cancel,
               ),
-              const _SummaryCard(
+              _SummaryCard(
+                title: 'Late Today',
+                value: lateToday.toString(),
+                icon: Icons.watch_later,
+              ),
+              _SummaryCard(
                 title: 'Attendance Percentage',
-                value: '0%',
+                value: '$attendancePercentage%',
                 icon: Icons.pie_chart,
               ),
             ],
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: null,
+            onPressed: () async {
+              final saved = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const MarkAttendanceScreen(),
+                ),
+              );
+
+              if (saved == true && mounted) {
+                setState(() {});
+              }
+            },
             icon: const Icon(Icons.fact_check),
             label: const Text('Mark Attendance'),
           ),
@@ -77,12 +122,17 @@ class AttendanceDashboardScreen extends StatelessWidget {
           _QuickActionCard(
             title: "Today's Attendance",
             icon: Icons.today,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Attendance marking will be available in ATT-002.'),
+            onTap: () async {
+              final saved = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const MarkAttendanceScreen(),
                 ),
               );
+
+              if (saved == true && mounted) {
+                setState(() {});
+              }
             },
           ),
           const SizedBox(height: 12),
