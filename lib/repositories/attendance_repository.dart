@@ -46,4 +46,29 @@ class AttendanceRepository {
   List<AttendanceRecord> todayAttendance() {
     return attendanceForDate(DateTime.now());
   }
+
+  AttendanceRecord? attendanceForStudentOnDate(
+      String studentId,
+      DateTime date,
+      ) {
+    try {
+      return _records.firstWhere(
+            (record) =>
+        record.studentId == studentId &&
+            record.date.year == date.year &&
+            record.date.month == date.month &&
+            record.date.day == date.day,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool hasAttendanceForDate(DateTime date) {
+    return attendanceForDate(date).isNotEmpty;
+  }
+
+  void updateAttendance(List<AttendanceRecord> records) {
+    saveAttendance(records);
+  }
 }
