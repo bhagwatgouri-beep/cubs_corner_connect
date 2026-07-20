@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/admission_draft.dart';
+import '../../../models/parent.dart';
 import '../../../models/student.dart';
+import '../../../repositories/parent_repository.dart';
 import '../../../repositories/student_repository.dart';
 import 'steps/additional_step.dart';
 import 'steps/guardian_step.dart';
@@ -40,7 +42,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     super.dispose();
   }
 
-  void _next() {
+  Future<void> _next() async {
     if (_currentStep >= 3) return;
 
     if (_currentStep == 0 && !_studentFormKey.currentState!.validate()) {
@@ -48,6 +50,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     }
 
     if (_currentStep == 1 && !_guardianFormKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_currentStep == 1 && !await _createParentIfNeeded()) {
       return;
     }
 
@@ -59,6 +65,59 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     setState(() {
       _currentStep++;
     });
+  }
+
+  Future<bool> _createParentIfNeeded() async {
+    if (draft.parentId.isNotEmpty) return true;
+
+    final existingParents = <Parent>[
+      ...ParentRepository.instance.parents,
+    ];
+
+    try {
+      existingParents.addAll(
+        await ParentRepository.instance.fetchParents(),
+      );
+    } catch (_) {}
+    final mobileNumber = draft.guardian1Mobile.trim();
+
+    final hasDuplicate = ParentRepository.instance.mobileExists(mobileNumber) ||
+        existingParents.any(
+          (parent) => parent.mobileNumber.trim() == mobileNumber,
+        );
+
+    if (hasDuplicate) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "A parent with this mobile number already exists. Select the existing parent instead.",
+            ),
+          ),
+        );
+      }
+      return false;
+    }
+
+    final parent = Parent(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      firstName: draft.guardian1Name.trim(),
+      lastName: '',
+      mobileNumber: mobileNumber,
+      email: draft.guardian1Email.trim(),
+      relationship: draft.guardian1Relationship,
+      occupation: '',
+      address: '',
+      isPrimaryContact: true,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    ParentRepository.instance.addParent(parent);
+    await ParentRepository.instance.saveParent(parent);
+    draft.parentId = parent.id;
+
+    return true;
   }
 
   void _back() {
@@ -87,7 +146,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       gender: draft.gender,
       classroomId: draft.classroomId,
       centreId: draft.centreId,
-      parentIds: const [],
+      parentIds: [draft.parentId],
       profileImageUrl: '',
       isActive: true,
       isDaycareEnrolled: draft.daycare,

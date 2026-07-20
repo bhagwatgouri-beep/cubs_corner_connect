@@ -14,6 +14,9 @@ class AdmissionDraft {
   String guardian1Mobile = '';
   String guardian1Email = '';
 
+  // Linked Parent
+  String parentId = '';
+
   // Guardian 2
   String guardian2Name = '';
   String guardian2Relationship = '';
