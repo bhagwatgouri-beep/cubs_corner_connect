@@ -4,6 +4,7 @@ import '../admissions/add_student_screen.dart';
 import '../students/student_directory_screen.dart';
 import '../parents/add_parent_screen.dart';
 import '../parents/parent_directory_screen.dart';
+import '../attendance/attendance_dashboard_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -108,7 +109,14 @@ class AdminDashboardScreen extends StatelessWidget {
           _MenuCard(
             title: "Attendance",
             icon: Icons.fact_check,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AttendanceDashboardScreen(),
+                ),
+              );
+            },
           ),
 
           _MenuCard(
