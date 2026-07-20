@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../admissions/add_student_screen.dart';
-import '../students/student_directory_screen.dart';
+import '../attendance/attendance_dashboard_screen.dart';
+import '../daycare/daycare_dashboard_screen.dart';
 import '../parents/add_parent_screen.dart';
 import '../parents/parent_directory_screen.dart';
-import '../attendance/attendance_dashboard_screen.dart';
+import '../students/student_directory_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -25,9 +26,7 @@ class AdminDashboardScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 16),
-
           _MenuCard(
             title: "New Admission",
             icon: Icons.person_add,
@@ -40,7 +39,6 @@ class AdminDashboardScreen extends StatelessWidget {
               );
             },
           ),
-
           _MenuCard(
             title: "Student Directory",
             icon: Icons.school,
@@ -48,15 +46,12 @@ class AdminDashboardScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                  const StudentDirectoryScreen(),
+                  builder: (_) => const StudentDirectoryScreen(),
                 ),
               );
             },
           ),
-
           const SizedBox(height: 30),
-
           const Text(
             "Parents",
             style: TextStyle(
@@ -64,9 +59,7 @@ class AdminDashboardScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 16),
-
           _MenuCard(
             title: "New Parent",
             icon: Icons.person_add_alt_1,
@@ -79,7 +72,6 @@ class AdminDashboardScreen extends StatelessWidget {
               );
             },
           ),
-
           _MenuCard(
             title: "Parent Directory",
             icon: Icons.people,
@@ -87,15 +79,12 @@ class AdminDashboardScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                  const ParentDirectoryScreen(),
+                  builder: (_) => const ParentDirectoryScreen(),
                 ),
               );
             },
           ),
-
           const SizedBox(height: 30),
-
           const Text(
             "Operations",
             style: TextStyle(
@@ -103,9 +92,7 @@ class AdminDashboardScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 16),
-
           _MenuCard(
             title: "Attendance",
             icon: Icons.fact_check,
@@ -118,13 +105,18 @@ class AdminDashboardScreen extends StatelessWidget {
               );
             },
           ),
-
           _MenuCard(
             title: "Daycare",
             icon: Icons.child_care,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DaycareDashboardScreen(),
+                ),
+              );
+            },
           ),
-
           _MenuCard(
             title: "Billing",
             icon: Icons.receipt_long,
