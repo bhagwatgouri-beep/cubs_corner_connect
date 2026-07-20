@@ -2,6 +2,7 @@ class Student {
   final String id;
   final String admissionNumber;
   final String firstName;
+  final String middleName;
   final String lastName;
   final DateTime dateOfBirth;
   final String gender;
@@ -22,6 +23,7 @@ class Student {
     required this.id,
     required this.admissionNumber,
     required this.firstName,
+    this.middleName = '',
     required this.lastName,
     required this.dateOfBirth,
     required this.gender,
@@ -39,12 +41,15 @@ class Student {
     required this.updatedAt,
   });
 
-  String get fullName => '$firstName $lastName';
+  String get fullName => [firstName, middleName, lastName]
+      .where((name) => name.isNotEmpty)
+      .join(' ');
 
   Student copyWith({
     String? id,
     String? admissionNumber,
     String? firstName,
+    String? middleName,
     String? lastName,
     DateTime? dateOfBirth,
     String? gender,
@@ -65,6 +70,7 @@ class Student {
       id: id ?? this.id,
       admissionNumber: admissionNumber ?? this.admissionNumber,
       firstName: firstName ?? this.firstName,
+      middleName: middleName ?? this.middleName,
       lastName: lastName ?? this.lastName,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       gender: gender ?? this.gender,
@@ -92,6 +98,7 @@ class Student {
       id: id,
       admissionNumber: map['admissionNumber'] ?? '',
       firstName: map['firstName'] ?? '',
+      middleName: map['middleName'] ?? '',
       lastName: map['lastName'] ?? '',
       dateOfBirth: DateTime.tryParse(
         map['dateOfBirth'] ?? '',
@@ -128,6 +135,7 @@ class Student {
     return {
       'admissionNumber': admissionNumber,
       'firstName': firstName,
+      'middleName': middleName,
       'lastName': lastName,
       'dateOfBirth': dateOfBirth.toIso8601String(),
       'gender': gender,
