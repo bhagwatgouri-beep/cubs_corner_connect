@@ -4,10 +4,12 @@ import '../../../../models/admission_draft.dart';
 
 class StudentStep extends StatefulWidget {
   final AdmissionDraft draft;
+  final GlobalKey<FormState> formKey;
 
   const StudentStep({
     super.key,
     required this.draft,
+    required this.formKey,
   });
 
   @override
@@ -44,7 +46,7 @@ class _StudentStepState extends State<StudentStep> {
     super.dispose();
   }
 
-  Future<void> _pickDate() async {
+  Future<void> _pickDate(FormFieldState<DateTime> field) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().subtract(
@@ -58,6 +60,7 @@ class _StudentStepState extends State<StudentStep> {
       setState(() {
         widget.draft.dateOfBirth = picked;
       });
+      field.didChange(picked);
     }
   }
 
@@ -65,9 +68,11 @@ class _StudentStepState extends State<StudentStep> {
   Widget build(BuildContext context) {
     final dob = widget.draft.dateOfBirth;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
+    return Form(
+      key: widget.formKey,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
         TextField(
           controller: _admissionController,
           readOnly: true,
@@ -77,41 +82,88 @@ class _StudentStepState extends State<StudentStep> {
           ),
         ),
         const SizedBox(height: 16),
-        TextField(
+        TextFormField(
           controller: _firstNameController,
           decoration: const InputDecoration(
             labelText: "First Name",
             border: OutlineInputBorder(),
           ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "First Name is required";
+            }
+            return null;
+          },
           onChanged: (value) {
             widget.draft.firstName = value;
           },
         ),
         const SizedBox(height: 16),
-        TextField(
+        TextFormField(
           controller: _lastNameController,
           decoration: const InputDecoration(
             labelText: "Last Name",
             border: OutlineInputBorder(),
           ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "Last Name is required";
+            }
+            return null;
+          },
           onChanged: (value) {
             widget.draft.lastName = value;
           },
         ),
         const SizedBox(height: 16),
-        ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(),
-          ),
-          title: const Text("Date of Birth"),
-          subtitle: Text(
-            dob == null
-                ? "Select Date"
-                : "${dob.day}/${dob.month}/${dob.year}",
-          ),
-          trailing: const Icon(Icons.calendar_month),
-          onTap: _pickDate,
+        FormField<DateTime>(
+          initialValue: dob,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null) {
+              return "Date of Birth is required";
+            }
+            return null;
+          },
+          builder: (field) {
+            final selectedDate = field.value;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: field.hasError
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
+                  title: const Text("Date of Birth"),
+                  subtitle: Text(
+                    selectedDate == null
+                        ? "Select Date"
+                        : "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                  ),
+                  trailing: const Icon(Icons.calendar_month),
+                  onTap: () => _pickDate(field),
+                ),
+                if (field.hasError)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12, top: 4),
+                    child: Text(
+                      field.errorText!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
@@ -122,6 +174,13 @@ class _StudentStepState extends State<StudentStep> {
             labelText: "Gender",
             border: OutlineInputBorder(),
           ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Gender is required";
+            }
+            return null;
+          },
           items: const [
             DropdownMenuItem(
               value: "Male",
@@ -140,7 +199,8 @@ class _StudentStepState extends State<StudentStep> {
             widget.draft.gender = value ?? "";
           },
         ),
-      ],
+        ],
+      ),
     );
   }
 }

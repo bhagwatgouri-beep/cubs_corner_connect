@@ -17,6 +17,8 @@ class AddStudentScreen extends StatefulWidget {
 
 class _AddStudentScreenState extends State<AddStudentScreen> {
   final PageController _pageController = PageController();
+  final GlobalKey<FormState> _studentFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _guardianFormKey = GlobalKey<FormState>();
 
   final AdmissionDraft draft = AdmissionDraft();
 
@@ -40,6 +42,14 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
   void _next() {
     if (_currentStep >= 3) return;
+
+    if (_currentStep == 0 && !_studentFormKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_currentStep == 1 && !_guardianFormKey.currentState!.validate()) {
+      return;
+    }
 
     _pageController.nextPage(
       duration: const Duration(milliseconds: 250),
@@ -67,7 +77,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     });
   }
 
-  void _save() {
+  Future<void> _save() async {
     final student = Student(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       admissionNumber: draft.admissionNumber,
@@ -90,6 +100,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     );
 
     StudentRepository.instance.addStudent(student);
+
+    await StudentRepository.instance.saveStudent(student);
+
+    if (!mounted) return;
 
     Navigator.pop(context);
   }
@@ -129,8 +143,14 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                StudentStep(draft: draft),
-                GuardianStep(draft: draft),
+                StudentStep(
+                  draft: draft,
+                  formKey: _studentFormKey,
+                ),
+                GuardianStep(
+                  draft: draft,
+                  formKey: _guardianFormKey,
+                ),
                 AdditionalStep(draft: draft),
                 ReviewStep(draft: draft),
               ],

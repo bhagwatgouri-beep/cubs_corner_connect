@@ -4,10 +4,12 @@ import '../../../../models/admission_draft.dart';
 
 class GuardianStep extends StatefulWidget {
   final AdmissionDraft draft;
+  final GlobalKey<FormState> formKey;
 
   const GuardianStep({
     super.key,
     required this.draft,
+    required this.formKey,
   });
 
   @override
@@ -46,16 +48,25 @@ class _GuardianStepState extends State<GuardianStep> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        TextField(
+    return Form(
+      key: widget.formKey,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+        TextFormField(
           controller: _guardian1NameController,
           decoration: const InputDecoration(
             labelText: "Guardian Name",
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.person),
           ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "Guardian Name is required";
+            }
+            return null;
+          },
           onChanged: (value) {
             widget.draft.guardian1Name = value;
           },
@@ -101,7 +112,7 @@ class _GuardianStepState extends State<GuardianStep> {
 
         const SizedBox(height: 16),
 
-        TextField(
+        TextFormField(
           controller: _guardian1MobileController,
           keyboardType: TextInputType.phone,
           decoration: const InputDecoration(
@@ -109,6 +120,13 @@ class _GuardianStepState extends State<GuardianStep> {
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.phone),
           ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "Mobile Number is required";
+            }
+            return null;
+          },
           onChanged: (value) {
             widget.draft.guardian1Mobile = value;
           },
@@ -128,7 +146,8 @@ class _GuardianStepState extends State<GuardianStep> {
             widget.draft.guardian1Email = value;
           },
         ),
-      ],
+        ],
+      ),
     );
   }
 }
