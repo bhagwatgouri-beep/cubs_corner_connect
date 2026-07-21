@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../repositories/billing_repository.dart';
 import '../../../repositories/parent_repository.dart';
 import '../../../repositories/student_repository.dart';
-
+import '../../../repositories/attendance_repository.dart';
 import '../admissions/add_student_screen.dart';
 import '../attendance/attendance_dashboard_screen.dart';
 import '../billing/billing_dashboard_screen.dart';
@@ -24,6 +24,9 @@ class AdminDashboardScreen extends StatelessWidget {
   static final BillingRepository _billingRepository =
       BillingRepository.instance;
 
+  static final _attendanceRepository =
+      AttendanceRepository.instance;
+
   @override
   Widget build(BuildContext context) {
     final activeStudents =
@@ -37,6 +40,9 @@ class AdminDashboardScreen extends StatelessWidget {
 
     final outstanding =
     _billingRepository.totalOutstanding();
+
+    final presentToday =
+        _attendanceRepository.todayAttendance().length;
 
     return Scaffold(
       appBar: AppBar(
@@ -83,6 +89,14 @@ class AdminDashboardScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _StatCard(
+                          title: 'Present',
+                          value: presentToday.toString(),
+                          icon: Icons.fact_check,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
                           title: 'Invoices',
                           value: pendingInvoices.toString(),
                           icon: Icons.receipt_long,
@@ -92,8 +106,7 @@ class AdminDashboardScreen extends StatelessWidget {
                       Expanded(
                         child: _StatCard(
                           title: 'Outstanding',
-                          value:
-                          '₹${outstanding.toStringAsFixed(0)}',
+                          value: '₹${outstanding.toStringAsFixed(0)}',
                           icon: Icons.currency_rupee,
                         ),
                       ),

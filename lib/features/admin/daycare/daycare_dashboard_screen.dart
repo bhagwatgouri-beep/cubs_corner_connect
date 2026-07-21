@@ -1,10 +1,35 @@
 import 'package:flutter/material.dart';
 
+import '../../../repositories/daycare_repository.dart';
+import 'check_in_screen.dart';
+import 'check_out_screen.dart';
+
 class DaycareDashboardScreen extends StatelessWidget {
   const DaycareDashboardScreen({super.key});
 
+  static final DaycareRepository _repository =
+      DaycareRepository.instance;
+
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+
+    final records = _repository.recordsForDate(today);
+
+    final checkedIn =
+        records.where((r) => r.isCheckedIn).length;
+
+    final checkedOut =
+        records.where((r) => r.isCheckedOut).length;
+
+    final currentlyInside =
+        _repository.activeChildren(today).length;
+
+    final pendingPickup =
+        records.where(
+              (r) => r.isCheckedIn && !r.isCheckedOut,
+        ).length;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Daycare Dashboard'),
@@ -13,73 +38,104 @@ class DaycareDashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            DateTime.now().day.toString().padLeft(2, '0') +
-                '/' +
-                DateTime.now().month.toString().padLeft(2, '0') +
-                '/' +
-                DateTime.now().year.toString(),
+            '${today.day.toString().padLeft(2, '0')}/'
+                '${today.month.toString().padLeft(2, '0')}/'
+                '${today.year}',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
+
           const SizedBox(height: 24),
+
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            physics:
+            const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
             childAspectRatio: 1.4,
-            children: const [
+            children: [
               _SummaryCard(
                 title: 'Checked In',
-                value: '0',
+                value: checkedIn.toString(),
                 icon: Icons.login,
               ),
               _SummaryCard(
                 title: 'Checked Out',
-                value: '0',
+                value: checkedOut.toString(),
                 icon: Icons.logout,
               ),
               _SummaryCard(
                 title: 'Currently Inside',
-                value: '0',
+                value: currentlyInside.toString(),
                 icon: Icons.child_care,
               ),
               _SummaryCard(
                 title: 'Pending Pickup',
-                value: '0',
+                value: pendingPickup.toString(),
                 icon: Icons.family_restroom,
               ),
             ],
           ),
+
           const SizedBox(height: 24),
+
           FilledButton.icon(
-            onPressed: null,
-            icon: Icon(Icons.login),
-            label: Text('Check In'),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                  const CheckInScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.login),
+            label: const Text('Check In'),
           ),
+
           const SizedBox(height: 12),
+
           FilledButton.icon(
-            onPressed: null,
-            icon: Icon(Icons.logout),
-            label: Text('Check Out'),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                  const CheckOutScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.logout),
+            label: const Text('Check Out'),
           ),
+
           const SizedBox(height: 24),
+
           Text(
             'Quick Actions',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium,
           ),
+
           const SizedBox(height: 12),
+
           const _QuickActionCard(
             title: 'Live Daycare Board',
             icon: Icons.monitor,
           ),
+
           const SizedBox(height: 12),
+
           const _QuickActionCard(
             title: 'Pickup Authorization',
             icon: Icons.verified_user,
           ),
+
           const SizedBox(height: 12),
+
           const _QuickActionCard(
             title: 'Daycare Reports',
             icon: Icons.assessment,
@@ -89,7 +145,6 @@ class DaycareDashboardScreen extends StatelessWidget {
     );
   }
 }
-
 class _SummaryCard extends StatelessWidget {
   final String title;
   final String value;
@@ -133,6 +188,7 @@ class _QuickActionCard extends StatelessWidget {
   final IconData icon;
 
   const _QuickActionCard({
+    super.key,
     required this.title,
     required this.icon,
   });
