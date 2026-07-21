@@ -6,7 +6,7 @@ import '../daycare/daycare_dashboard_screen.dart';
 import '../parents/add_parent_screen.dart';
 import '../parents/parent_directory_screen.dart';
 import '../students/student_directory_screen.dart';
-
+import '../billing/billing_dashboard_screen.dart';
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
 
@@ -120,7 +120,14 @@ class AdminDashboardScreen extends StatelessWidget {
           _MenuCard(
             title: "Billing",
             icon: Icons.receipt_long,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const BillingDashboardScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),

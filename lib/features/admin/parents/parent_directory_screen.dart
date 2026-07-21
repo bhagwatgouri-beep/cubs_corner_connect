@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'parent_profile_screen.dart';
 import '../../../repositories/parent_repository.dart';
 
 class ParentDirectoryScreen extends StatefulWidget {
@@ -100,7 +100,16 @@ class _ParentDirectoryScreenState
                       Icons.arrow_forward_ios,
                       size: 16,
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ParentProfileScreen(
+                            parent: parent,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
