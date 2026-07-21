@@ -5,7 +5,8 @@ import '../../../models/student.dart';
 import '../../../repositories/billing_repository.dart';
 import '../../../repositories/parent_repository.dart';
 import '../../../repositories/student_repository.dart';
-
+import '../../../models/attendance_record.dart';
+import '../../../repositories/attendance_repository.dart';
 import '../billing/generate_invoice_screen.dart';
 import 'edit_student_screen.dart';
 import 'student_attendance_screen.dart';
@@ -130,6 +131,22 @@ return invoices.fold(
 (sum, invoice) =>
 sum + invoice.balance,
 );
+}
+int _attendancePercentage() {
+  final attendance = AttendanceRepository.instance
+      .attendanceForStudent(_student.id);
+
+  if (attendance.isEmpty) {
+    return 0;
+  }
+
+  final present = attendance.where(
+        (record) =>
+    record.status == AttendanceStatus.present ||
+        record.status == AttendanceStatus.late,
+  ).length;
+
+  return ((present / attendance.length) * 100).round();
 }
 
 @override
@@ -306,10 +323,9 @@ Colors.green,
 title: const Text(
 'Attendance',
 ),
-subtitle:
-const Text(
-'0%',
-),
+  subtitle: Text(
+    '${_attendancePercentage()}%',
+  ),
 ),
 ),
 Expanded(
