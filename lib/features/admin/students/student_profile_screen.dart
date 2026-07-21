@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../repositories/daycare_repository.dart';
 import '../../../models/parent.dart';
 import '../../../models/student.dart';
 import '../../../repositories/billing_repository.dart';
@@ -149,6 +149,49 @@ int _attendancePercentage() {
   return ((present / attendance.length) * 100).round();
 }
 
+String _daycareStatus() {
+  final record = DaycareRepository.instance
+      .recordForStudentOnDate(
+    _student.id,
+    DateTime.now(),
+  );
+
+  if (record == null) {
+    return 'Not Using Today';
+  }
+
+  if (record.isCheckedIn && !record.isCheckedOut) {
+    return 'Currently Inside';
+  }
+
+  if (record.isCheckedOut) {
+    return 'Checked Out';
+  }
+
+  return 'Not Using Today';
+}
+
+Color _daycareStatusColor() {
+  final record = DaycareRepository.instance
+      .recordForStudentOnDate(
+    _student.id,
+    DateTime.now(),
+  );
+
+  if (record == null) {
+    return Colors.grey;
+  }
+
+  if (record.isCheckedIn && !record.isCheckedOut) {
+    return Colors.green;
+  }
+
+  if (record.isCheckedOut) {
+    return Colors.blue;
+  }
+
+  return Colors.grey;
+}
 @override
 Widget build(BuildContext context) {
 final parent = _parentForStudent();
@@ -379,13 +422,16 @@ Icons
 color:
 Colors.blue,
 ),
-title: const Text(
-'Daycare',
-),
-subtitle:
-const Text(
-'Not Enrolled',
-),
+  title: const Text(
+  'Daycare',
+  ),
+  subtitle: Text(
+  _daycareStatus(),
+  style: TextStyle(
+  color: _daycareStatusColor(),
+  fontWeight: FontWeight.w600,
+  ),
+  ),
 ),
 ),
 ],
