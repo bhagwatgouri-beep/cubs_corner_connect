@@ -7,6 +7,8 @@ import '../../../models/student.dart';
 import '../../../repositories/parent_repository.dart';
 import '../../../repositories/student_repository.dart';
 import 'edit_student_screen.dart';
+import 'student_attendance_screen.dart';
+
 
 class StudentProfileScreen extends StatefulWidget {
   final Student student;
@@ -325,7 +327,16 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                     children: [
                       Expanded(
                         child: FilledButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StudentAttendanceScreen(
+                                  student: _student,
+                                ),
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.calendar_month),
                           label: const Text('Attendance'),
                         ),
