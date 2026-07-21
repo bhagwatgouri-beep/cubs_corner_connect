@@ -8,7 +8,7 @@ import '../../../repositories/parent_repository.dart';
 import '../../../repositories/student_repository.dart';
 import 'edit_student_screen.dart';
 import 'student_attendance_screen.dart';
-
+import 'student_documents_screen.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   final Student student;
@@ -377,7 +377,16 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: FilledButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StudentDocumentsScreen(
+                                  student: _student,
+                                ),
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.folder_open),
                           label: const Text('Documents'),
                         ),
