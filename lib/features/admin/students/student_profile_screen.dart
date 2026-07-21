@@ -11,7 +11,7 @@ import 'student_attendance_screen.dart';
 import 'student_documents_screen.dart';
 import 'student_notes_screen.dart';
 import 'student_daycare_screen.dart';
-
+import 'student_timeline_button.dart';
 class StudentProfileScreen extends StatefulWidget {
   final Student student;
 
@@ -499,31 +499,39 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _openEdit,
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Edit Student'),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _toggleActiveStatus,
-                      icon: Icon(
-                        _student.isActive
-                            ? Icons.archive
-                            : Icons.check_circle,
-                      ),
-                      label: Text(
-                        _student.isActive
-                            ? 'Archive Student'
-                            : 'Activate Student',
-                      ),
-                    ),
-                  ),
+SizedBox(
+width: double.infinity,
+child: OutlinedButton.icon(
+onPressed: _openEdit,
+icon: const Icon(Icons.edit),
+label: const Text('Edit Student'),
+),
+),
+
+const SizedBox(height: 12),
+
+StudentTimelineButton(
+student: _student,
+),
+
+const SizedBox(height: 12),
+
+SizedBox(
+width: double.infinity,
+child: OutlinedButton.icon(
+onPressed: _toggleActiveStatus,
+icon: Icon(
+_student.isActive
+? Icons.archive
+: Icons.check_circle,
+),
+label: Text(
+_student.isActive
+? 'Archive Student'
+: 'Activate Student',
+),
+),
+),
                 ],
               ),
             ),
