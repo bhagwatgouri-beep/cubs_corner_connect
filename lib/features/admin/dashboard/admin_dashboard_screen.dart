@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../repositories/daycare_repository.dart';
 import '../../../repositories/billing_repository.dart';
 import '../../../repositories/parent_repository.dart';
 import '../../../repositories/student_repository.dart';
@@ -26,6 +26,8 @@ class AdminDashboardScreen extends StatelessWidget {
 
   static final _attendanceRepository =
       AttendanceRepository.instance;
+  static final _daycareRepository =
+      DaycareRepository.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +37,15 @@ class AdminDashboardScreen extends StatelessWidget {
     final totalParents =
         _parentRepository.parents.length;
 
-    final pendingInvoices =
-        _billingRepository.pendingInvoices().length;
-
     final outstanding =
     _billingRepository.totalOutstanding();
 
     final presentToday =
         _attendanceRepository.todayAttendance().length;
+    final insideDaycare =
+        _daycareRepository
+            .activeChildren(DateTime.now())
+            .length;
 
     return Scaffold(
       appBar: AppBar(
@@ -97,9 +100,9 @@ class AdminDashboardScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _StatCard(
-                          title: 'Invoices',
-                          value: pendingInvoices.toString(),
-                          icon: Icons.receipt_long,
+                          title: 'In Daycare',
+                          value: insideDaycare.toString(),
+                          icon: Icons.child_care,
                         ),
                       ),
                       const SizedBox(width: 12),
