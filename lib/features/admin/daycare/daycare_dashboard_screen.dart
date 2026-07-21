@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../repositories/daycare_repository.dart';
-
+import 'daycare_history_screen.dart';
 import 'check_in_screen.dart';
 import 'check_out_screen.dart';
 import 'live_daycare_board_screen.dart';
 import 'pickup_authorization_screen.dart';
-import 'daycare_reports_screen.dart';
 
 class DaycareDashboardScreen extends StatefulWidget {
   const DaycareDashboardScreen({super.key});
@@ -173,14 +172,14 @@ const SizedBox(height: 24),
   const SizedBox(height: 12),
 
   _QuickActionCard(
-    title: 'Daycare Reports',
-    icon: Icons.assessment,
+    title: 'Daycare History',
+    icon: Icons.history,
     onTap: () {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) =>
-          const DaycareReportsScreen(),
+          const DaycareHistoryScreen(),
         ),
       );
     },
@@ -241,7 +240,6 @@ class _QuickActionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _QuickActionCard({
-    super.key,
     required this.title,
     required this.icon,
     required this.onTap,
