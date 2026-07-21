@@ -6,7 +6,12 @@ import '../../../repositories/billing_repository.dart';
 import '../../../repositories/student_repository.dart';
 
 class GenerateInvoiceScreen extends StatefulWidget {
-  const GenerateInvoiceScreen({super.key});
+  final Student? student;
+
+  const GenerateInvoiceScreen({
+    super.key,
+    this.student,
+  });
 
   @override
   State<GenerateInvoiceScreen> createState() =>
@@ -22,6 +27,13 @@ class _GenerateInvoiceScreenState
 
   final TextEditingController _amountController =
   TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedStudent = widget.student;
+  }
 
   @override
   void dispose() {

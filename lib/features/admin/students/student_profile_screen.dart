@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
 
+import '../../../repositories/billing_repository.dart';
+import 'package:flutter/material.dart';
+import '../billing/generate_invoice_screen.dart';
 import '../../../models/parent.dart';
 import '../../../models/student.dart';
 import '../../../repositories/parent_repository.dart';
@@ -118,7 +120,15 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
       _student = updatedStudent;
     });
   }
+  double _outstandingBalance() {
+    final invoices = BillingRepository.instance
+        .invoicesForStudent(_student.id);
 
+    return invoices.fold(
+      0.0,
+          (sum, invoice) => sum + invoice.balance,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final parent = _parentForStudent();
@@ -139,26 +149,250 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 40,
+                    radius: 42,
                     child: Text(
                       _student.firstName.isEmpty
                           ? '?'
                           : _student.firstName[0].toUpperCase(),
-                      style: const TextStyle(fontSize: 30),
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
+
                   const SizedBox(height: 16),
+
                   Text(
                     _student.fullName,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(_student.admissionNumber),
+
+                  const SizedBox(height: 6),
+
+                  Text(
+                    _student.admissionNumber,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      Chip(
+                        avatar: Icon(
+                          _student.isActive
+                              ? Icons.check_circle
+                              : Icons.cancel,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                        backgroundColor:
+                        _student.isActive ? Colors.green : Colors.red,
+                        label: Text(
+                          _student.isActive
+                              ? 'Active'
+                              : 'Inactive',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+
+                      Chip(
+                        avatar: const Icon(
+                          Icons.class_,
+                          size: 18,
+                        ),
+                        label: Text(_student.classroomId),
+                      ),
+                    ],
+                  ),
+
+                  if (parent != null) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.family_restroom,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            parent.fullName,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          _sectionTitle(context, 'Student Summary'),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.calendar_month,
+                            color: Colors.green,
+                          ),
+                          title: const Text('Attendance'),
+                          subtitle: const Text('0%'),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.receipt_long,
+                            color: Colors.orange,
+                          ),
+                          title: const Text('Outstanding'),
+                          subtitle: Text(
+                            '₹${_outstandingBalance().toStringAsFixed(0)}',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Divider(),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.health_and_safety,
+                            color: Colors.red,
+                          ),
+                          title: const Text('Health Alerts'),
+                          subtitle: const Text('0'),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.child_care,
+                            color: Colors.blue,
+                          ),
+                          title: const Text('Daycare'),
+                          subtitle: const Text('Not Enrolled'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          _sectionTitle(context, 'Quick Actions'),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.calendar_month),
+                          label: const Text('Attendance'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () async {
+                            final generated = await Navigator.push<bool>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => GenerateInvoiceScreen(
+                                  student: _student,
+                                ),
+                              ),
+                            );
+
+                            if (generated == true && mounted) {
+                              setState(() {});
+                            }
+                          },
+                          icon: const Icon(Icons.receipt_long),
+                          label: const Text('Billing'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.health_and_safety),
+                          label: const Text('Health'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.folder_open),
+                          label: const Text('Documents'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.child_care),
+                          label: const Text('Daycare'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.note_alt),
+                          label: const Text('Notes'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -225,24 +459,13 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _openEdit,
-                          icon: const Icon(Icons.edit),
-                          label: const Text('Edit Student'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: null,
-                          icon: const Icon(Icons.calendar_month),
-                          label: const Text('View Attendance'),
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _openEdit,
+                      icon: const Icon(Icons.edit),
+                      label: const Text('Edit Student'),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
@@ -260,26 +483,6 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                             : 'Activate Student',
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: null,
-                          icon: const Icon(Icons.receipt_long),
-                          label: const Text('Billing'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: null,
-                          icon: const Icon(Icons.folder_open),
-                          label: const Text('Documents'),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
