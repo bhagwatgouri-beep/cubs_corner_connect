@@ -9,7 +9,7 @@ import '../../../repositories/student_repository.dart';
 import 'edit_student_screen.dart';
 import 'student_attendance_screen.dart';
 import 'student_documents_screen.dart';
-
+import 'student_notes_screen.dart';
 class StudentProfileScreen extends StatefulWidget {
   final Student student;
 
@@ -406,7 +406,16 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: FilledButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StudentNotesScreen(
+                                  student: _student,
+                                ),
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.note_alt),
                           label: const Text('Notes'),
                         ),
