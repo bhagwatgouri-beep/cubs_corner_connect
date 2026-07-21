@@ -8,6 +8,10 @@ class AdmissionDraft {
   DateTime? dateOfBirth;
   String gender = '';
 
+  /// Local image selected during admission.
+  /// Later this will hold the Firebase Storage URL.
+  String profileImageUrl = '';
+
   // Guardian 1
   String guardian1Name = '';
   String guardian1Relationship = '';

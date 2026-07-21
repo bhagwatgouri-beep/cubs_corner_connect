@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 import '../../../../models/admission_draft.dart';
 
@@ -42,7 +43,15 @@ class ReviewStep extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const Divider(),
-
+                if (draft.profileImageUrl.isNotEmpty) ...[
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: FileImage(
+                      File(draft.profileImageUrl),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 _tile("Admission No", draft.admissionNumber),
                 _tile("First Name", draft.firstName),
                 _tile("Last Name", draft.lastName),

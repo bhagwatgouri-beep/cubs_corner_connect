@@ -147,7 +147,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       classroomId: draft.classroomId,
       centreId: draft.centreId,
       parentIds: [draft.parentId],
-      profileImageUrl: '',
+      profileImageUrl: draft.profileImageUrl,
       isActive: true,
       isDaycareEnrolled: draft.daycare,
       usesTransport: draft.transport,
