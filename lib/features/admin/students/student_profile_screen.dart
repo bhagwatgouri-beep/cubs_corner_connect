@@ -10,6 +10,8 @@ import 'edit_student_screen.dart';
 import 'student_attendance_screen.dart';
 import 'student_documents_screen.dart';
 import 'student_notes_screen.dart';
+import 'student_daycare_screen.dart';
+
 class StudentProfileScreen extends StatefulWidget {
   final Student student;
 
@@ -398,7 +400,16 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                     children: [
                       Expanded(
                         child: FilledButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StudentDaycareScreen(
+                                  student: _student,
+                                ),
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.child_care),
                           label: const Text('Daycare'),
                         ),
