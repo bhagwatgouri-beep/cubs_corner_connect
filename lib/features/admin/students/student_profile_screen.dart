@@ -192,6 +192,26 @@ Color _daycareStatusColor() {
 
   return Colors.grey;
 }
+
+int _healthAlertCount() {
+  int alerts = 0;
+
+  if (_student.allergies.trim().isNotEmpty) {
+    alerts++;
+  }
+
+  if (_student.medicalNotes.trim().isNotEmpty) {
+    alerts++;
+  }
+
+  return alerts;
+}
+
+Color _healthAlertColor() {
+  return _healthAlertCount() == 0
+      ? Colors.green
+      : Colors.red;
+}
 @override
 Widget build(BuildContext context) {
 final parent = _parentForStudent();
@@ -404,13 +424,18 @@ Icons
 color:
 Colors.red,
 ),
-title: const Text(
-'Health Alerts',
-),
-subtitle:
-const Text(
-'0',
-),
+  title: const Text(
+    'Health Alerts',
+  ),
+  subtitle: Text(
+    _healthAlertCount() == 0
+        ? 'No Alerts'
+        : '${_healthAlertCount()} Alert${_healthAlertCount() == 1 ? '' : 's'}',
+    style: TextStyle(
+      color: _healthAlertColor(),
+      fontWeight: FontWeight.w600,
+    ),
+  ),
 ),
 ),
 Expanded(
