@@ -1,130 +1,238 @@
 import 'package:flutter/material.dart';
 
+import '../../../repositories/billing_repository.dart';
+import '../../../repositories/parent_repository.dart';
+import '../../../repositories/student_repository.dart';
+
 import '../admissions/add_student_screen.dart';
 import '../attendance/attendance_dashboard_screen.dart';
+import '../billing/billing_dashboard_screen.dart';
 import '../daycare/daycare_dashboard_screen.dart';
 import '../parents/add_parent_screen.dart';
 import '../parents/parent_directory_screen.dart';
 import '../students/student_directory_screen.dart';
-import '../billing/billing_dashboard_screen.dart';
+
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
 
+  static final StudentRepository _studentRepository =
+      StudentRepository.instance;
+
+  static final ParentRepository _parentRepository =
+      ParentRepository.instance;
+
+  static final BillingRepository _billingRepository =
+      BillingRepository.instance;
+
   @override
   Widget build(BuildContext context) {
+    final activeStudents =
+        _studentRepository.activeStudents.length;
+
+    final totalParents =
+        _parentRepository.parents.length;
+
+    final pendingInvoices =
+        _billingRepository.pendingInvoices().length;
+
+    final outstanding =
+    _billingRepository.totalOutstanding();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Swayyam Education Foundation"),
+        title: const Text('Swayyam Education Foundation'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Today's Snapshot",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          title: 'Children',
+                          value: activeStudents.toString(),
+                          icon: Icons.child_care,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
+                          title: 'Parents',
+                          value: totalParents.toString(),
+                          icon: Icons.people,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          title: 'Invoices',
+                          value: pendingInvoices.toString(),
+                          icon: Icons.receipt_long,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
+                          title: 'Outstanding',
+                          value:
+                          '₹${outstanding.toStringAsFixed(0)}',
+                          icon: Icons.currency_rupee,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           const Text(
-            "Admissions",
+            'Admissions',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
+
           const SizedBox(height: 16),
+
           _MenuCard(
-            title: "New Admission",
+            title: 'New Admission',
             icon: Icons.person_add,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const AddStudentScreen(),
+                  builder: (_) =>
+                  const AddStudentScreen(),
                 ),
               );
             },
           ),
+
           _MenuCard(
-            title: "Student Directory",
+            title: 'Student Directory',
             icon: Icons.school,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const StudentDirectoryScreen(),
+                  builder: (_) =>
+                  const StudentDirectoryScreen(),
                 ),
               );
             },
           ),
+
           const SizedBox(height: 30),
+
           const Text(
-            "Parents",
+            'Parents',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
+
           const SizedBox(height: 16),
+
           _MenuCard(
-            title: "New Parent",
+            title: 'New Parent',
             icon: Icons.person_add_alt_1,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const AddParentScreen(),
+                  builder: (_) =>
+                  const AddParentScreen(),
                 ),
               );
             },
           ),
+
           _MenuCard(
-            title: "Parent Directory",
+            title: 'Parent Directory',
             icon: Icons.people,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const ParentDirectoryScreen(),
+                  builder: (_) =>
+                  const ParentDirectoryScreen(),
                 ),
               );
             },
           ),
+
           const SizedBox(height: 30),
+
           const Text(
-            "Operations",
+            'Operations',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
+
           const SizedBox(height: 16),
+
           _MenuCard(
-            title: "Attendance",
+            title: 'Attendance',
             icon: Icons.fact_check,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const AttendanceDashboardScreen(),
+                  builder: (_) =>
+                  const AttendanceDashboardScreen(),
                 ),
               );
             },
           ),
+
           _MenuCard(
-            title: "Daycare",
+            title: 'Daycare',
             icon: Icons.child_care,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DaycareDashboardScreen(),
+                  builder: (_) =>
+                  const DaycareDashboardScreen(),
                 ),
               );
             },
           ),
+
           _MenuCard(
-            title: "Billing",
+            title: 'Billing',
             icon: Icons.receipt_long,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const BillingDashboardScreen(),
+                  builder: (_) =>
+                  const BillingDashboardScreen(),
                 ),
               );
             },
@@ -134,7 +242,6 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 }
-
 class _MenuCard extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -154,6 +261,42 @@ class _MenuCard extends StatelessWidget {
         title: Text(title),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+
+  const _StatCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 30,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 4),
+            Text(title),
+          ],
+        ),
       ),
     );
   }
