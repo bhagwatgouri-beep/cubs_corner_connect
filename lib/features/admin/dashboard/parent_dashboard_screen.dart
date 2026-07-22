@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../repositories/communication_repository.dart';
 import '../../../models/student.dart';
 import '../../../repositories/attendance_repository.dart';
 import '../../../repositories/billing_repository.dart';
@@ -27,6 +27,9 @@ BillingRepository.instance;
 
 final DaycareRepository _daycareRepository =
 DaycareRepository.instance;
+
+final CommunicationRepository _communicationRepository =
+    CommunicationRepository.instance;
 
 late Student _student;
 
@@ -82,6 +85,20 @@ double get _outstandingFees {
     0.0,
         (sum, invoice) => sum + invoice.balance,
   );
+}
+String get _latestNotice {
+  final notices =
+      _communicationRepository.publishedAnnouncements;
+
+  if (notices.isEmpty) {
+    return 'No notices available';
+  }
+
+  notices.sort(
+        (a, b) => b.createdAt.compareTo(a.createdAt),
+  );
+
+  return notices.first.title;
 }
 @override
 Widget build(BuildContext context) {
@@ -209,8 +226,8 @@ const SizedBox(height: 12),
       title: const Text(
         'Latest Notice',
       ),
-      subtitle: const Text(
-        'No new notices',
+      subtitle: Text(
+        _latestNotice,
       ),
     ),
   ),
