@@ -6,6 +6,8 @@ import '../../repositories/student_repository.dart';
 import '../../repositories/teacher_repository.dart';
 import '../admin/students/student_profile_screen.dart';
 import '../../models/attendance_record.dart';
+import '../admin/attendance/attendance_dashboard_screen.dart';
+
 class MyClassScreen extends StatelessWidget {
 const MyClassScreen({super.key});
 
@@ -83,10 +85,21 @@ return Card(
         );
       },
     ),
-    trailing: const Icon(
-      Icons.arrow_forward_ios,
-      size: 18,
-    ),
+      trailing: IconButton(
+        icon: const Icon(
+          Icons.fact_check,
+          color: Colors.green,
+        ),
+        tooltip: 'Attendance',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const AttendanceDashboardScreen(),
+            ),
+          );
+        },
+      ),
     onTap: () {
       Navigator.push(
         context,
