@@ -4,6 +4,7 @@ import '../../models/attendance_record.dart';
 import '../../models/student.dart';
 import '../../models/teacher.dart';
 import '../../repositories/attendance_repository.dart';
+import '../../repositories/daycare_repository.dart';
 import '../../repositories/student_repository.dart';
 import '../../repositories/teacher_repository.dart';
 import '../admin/students/student_profile_screen.dart';
@@ -30,6 +31,9 @@ StudentRepository.instance;
 
 final attendanceRepository =
 AttendanceRepository.instance;
+
+final daycareRepository =
+DaycareRepository.instance;
 
 if (teacherRepository.activeTeachers.isEmpty) {
 return Scaffold(
@@ -82,14 +86,13 @@ _search = value;
 });
 },
 ),
-
 const SizedBox(height: 16),
-
 Expanded(
 child: ListView.builder(
 itemCount: students.length,
 itemBuilder: (context, index) {
 final student = students[index];
+
 final records =
 attendanceRepository
 .attendanceForStudent(
@@ -102,6 +105,24 @@ records.isNotEmpty &&
 AttendanceStatus.present ||
 records.last.status ==
 AttendanceStatus.late);
+
+final daycareRecord =
+daycareRepository
+.recordForStudentOnDate(
+student.id,
+DateTime.now(),
+);
+
+Color daycareColor = Colors.grey;
+
+if (daycareRecord != null) {
+if (daycareRecord.isCheckedOut) {
+daycareColor = Colors.blue;
+} else if (daycareRecord
+.isCheckedIn) {
+daycareColor = Colors.green;
+}
+}
 
 return Card(
 margin: const EdgeInsets.only(
@@ -117,12 +138,8 @@ student.firstName.isNotEmpty
 : '?',
 ),
 ),
-if (student
-.allergies
-.isNotEmpty ||
-student
-.medicalNotes
-.isNotEmpty)
+if (student.allergies.isNotEmpty ||
+student.medicalNotes.isNotEmpty)
 const Positioned(
 right: 0,
 bottom: 0,
@@ -147,22 +164,65 @@ present
 ? '🟢 Present Today'
 : '🔴 Absent / Not Marked',
 ),
-trailing: IconButton(
-icon: const Icon(
-Icons.fact_check,
-color: Colors.green,
+trailing: Row(
+mainAxisSize: MainAxisSize.min,
+children: [
+IconButton(
+icon: Icon(
+present
+? Icons.check_circle
+: Icons
+.radio_button_unchecked,
+color: present
+? Colors.green
+: Colors.grey,
 ),
 tooltip: 'Attendance',
-  onPressed: () {
-    attendanceRepository.markAttendance(
-      studentId: student.id,
-      status: present
-          ? AttendanceStatus.absent
-          : AttendanceStatus.present,
-      markedBy: teacher.name,
-    );
-    setState(() {});
-  },
+onPressed: () {
+attendanceRepository
+.markAttendance(
+studentId: student.id,
+status: present
+? AttendanceStatus
+.absent
+: AttendanceStatus
+.present,
+markedBy: teacher.name,
+);
+
+setState(() {});
+},
+),
+IconButton(
+icon: Icon(
+Icons.home,
+color: daycareColor,
+),
+tooltip: 'Daycare',
+onPressed: () {
+if (daycareRecord == null) {
+daycareRepository
+.checkInStudent(
+studentId:
+student.id,
+checkedInBy:
+teacher.name,
+);
+} else if (!daycareRecord
+.isCheckedOut) {
+daycareRepository
+.checkOutStudent(
+studentId:
+student.id,
+checkedOutBy:
+teacher.name,
+);
+}
+
+setState(() {});
+},
+),
+],
 ),
 onTap: () {
 Navigator.push(
@@ -172,7 +232,7 @@ builder: (_) =>
 StudentProfileScreen(
 student: student,
 ),
-)
+),
 );
 },
 ),
