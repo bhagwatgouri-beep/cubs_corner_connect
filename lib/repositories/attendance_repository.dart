@@ -71,4 +71,36 @@ class AttendanceRepository {
   void updateAttendance(List<AttendanceRecord> records) {
     saveAttendance(records);
   }
+  void markAttendance({
+    required String studentId,
+    required AttendanceStatus status,
+    required String markedBy,
+  }) {
+    final today = DateTime.now();
+
+    final existing = attendanceForStudentOnDate(
+      studentId,
+      today,
+    );
+
+    final record = AttendanceRecord(
+      id: existing?.id ??
+          '${studentId}_${today.millisecondsSinceEpoch}',
+      studentId: studentId,
+      date: DateTime(
+        today.year,
+        today.month,
+        today.day,
+      ),
+      status: status,
+      markedAt: DateTime.now(),
+      markedBy: markedBy,
+    );
+
+    if (existing != null) {
+      _records.remove(existing);
+    }
+
+    _records.add(record);
+  }
 }
