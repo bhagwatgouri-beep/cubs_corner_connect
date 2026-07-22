@@ -5,7 +5,21 @@ class TeacherRepository {
 
   static final TeacherRepository instance = TeacherRepository._();
 
-  final List<Teacher> _teachers = [];
+  final List<Teacher> _teachers = [
+    Teacher(
+      id: 'T001',
+      employeeCode: 'EMP001',
+      name: 'Ankhi Teacher',
+      email: 'ankhi@swayyam.edu',
+      phoneNumber: '9876543210',
+      role: 'Teacher',
+      designation: 'Class Teacher',
+      qualification: 'B.Ed',
+      centreId: 'CENTRE01',
+      classroomIds: const ['Nursery'],
+      isActive: true,
+    ),
+  ];
 
   List<Teacher> get teachers => List.unmodifiable(_teachers);
 
