@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import '../admin/communication/communication_dashboard_screen.dart';
 import '../admin/attendance/attendance_dashboard_screen.dart';
 import '../admin/daycare/daycare_dashboard_screen.dart';
-import '../admin/students/student_directory_screen.dart';
-
+import 'my_class_screen.dart';
 class TeacherHomeScreen extends StatelessWidget {
 const TeacherHomeScreen({super.key});
 
@@ -68,20 +67,19 @@ const AttendanceDashboardScreen(),
 },
 ),
 
-_ActionCard(
-title: 'Students',
-subtitle: 'View student directory',
-icon: Icons.people,
-onTap: () {
-Navigator.push(
-context,
-MaterialPageRoute(
-builder: (_) =>
-const StudentDirectoryScreen(),
-),
-);
-},
-),
+  _ActionCard(
+    title: 'My Class',
+    subtitle: 'View students in your classroom',
+    icon: Icons.groups,
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const MyClassScreen(),
+        ),
+      );
+    },
+  ),
 
 _ActionCard(
 title: 'Daycare',
