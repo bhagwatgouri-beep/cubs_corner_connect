@@ -6,7 +6,6 @@ import '../../models/teacher.dart';
 import '../../repositories/attendance_repository.dart';
 import '../../repositories/student_repository.dart';
 import '../../repositories/teacher_repository.dart';
-import '../admin/attendance/attendance_dashboard_screen.dart';
 import '../admin/students/student_profile_screen.dart';
 
 class MyClassScreen extends StatefulWidget {
@@ -154,15 +153,16 @@ Icons.fact_check,
 color: Colors.green,
 ),
 tooltip: 'Attendance',
-onPressed: () {
-Navigator.push(
-context,
-MaterialPageRoute(
-builder: (_) =>
-const AttendanceDashboardScreen(),
-),
-);
-},
+  onPressed: () {
+    attendanceRepository.markAttendance(
+      studentId: student.id,
+      status: present
+          ? AttendanceStatus.absent
+          : AttendanceStatus.present,
+      markedBy: teacher.name,
+    );
+    setState(() {});
+  },
 ),
 onTap: () {
 Navigator.push(
