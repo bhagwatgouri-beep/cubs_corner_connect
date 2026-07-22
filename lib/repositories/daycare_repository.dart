@@ -55,4 +55,72 @@ class DaycareRepository {
     )
         .toList();
   }
+
+  void checkInStudent({
+    required String studentId,
+    required String checkedInBy,
+  }) {
+    final today = DateTime.now();
+
+    final existing = recordForStudentOnDate(
+      studentId,
+      today,
+    );
+
+    final record = DaycareRecord(
+      id: existing?.id ??
+          '${studentId}_${today.millisecondsSinceEpoch}',
+      studentId: studentId,
+      date: DateTime(
+        today.year,
+        today.month,
+        today.day,
+      ),
+      checkInTime:
+      existing?.checkInTime ?? DateTime.now(),
+      checkOutTime: existing?.checkOutTime,
+      checkedInBy: checkedInBy,
+      checkedOutBy: existing?.checkedOutBy ?? '',
+      pickupPerson: existing?.pickupPerson ?? '',
+      pickupRelation: existing?.pickupRelation ?? '',
+      isCheckedIn: true,
+      isCheckedOut: false,
+      createdAt: existing?.createdAt ?? DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    saveRecord(record);
+  }
+
+  void checkOutStudent({
+    required String studentId,
+    required String checkedOutBy,
+  }) {
+    final today = DateTime.now();
+
+    final existing = recordForStudentOnDate(
+      studentId,
+      today,
+    );
+
+    if (existing == null) return;
+
+    saveRecord(
+      DaycareRecord(
+        id: existing.id,
+        studentId: existing.studentId,
+        date: existing.date,
+        checkInTime: existing.checkInTime,
+        checkOutTime: DateTime.now(),
+        checkedInBy: existing.checkedInBy,
+        checkedOutBy: checkedOutBy,
+        pickupPerson: existing.pickupPerson,
+        pickupRelation: existing.pickupRelation,
+        isCheckedIn: true,
+        isCheckedOut: true,
+        createdAt: existing.createdAt,
+        updatedAt: DateTime.now(),
+      ),
+    );
+  }
 }
