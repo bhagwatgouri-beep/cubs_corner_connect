@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-
+import '../../repositories/attendance_repository.dart';
 import '../../models/student.dart';
 import '../../models/teacher.dart';
 import '../../repositories/student_repository.dart';
 import '../../repositories/teacher_repository.dart';
 import '../admin/students/student_profile_screen.dart';
-
+import '../../models/attendance_record.dart';
 class MyClassScreen extends StatelessWidget {
 const MyClassScreen({super.key});
 
@@ -16,6 +16,8 @@ TeacherRepository.instance;
 
 final studentRepository =
 StudentRepository.instance;
+final attendanceRepository =
+    AttendanceRepository.instance;
 
 if (teacherRepository.activeTeachers.isEmpty) {
 return Scaffold(
@@ -63,8 +65,23 @@ return Card(
     title: Text(
       student.fullName,
     ),
-    subtitle: Text(
-      '${student.classroomId} • ${student.admissionNumber}',
+    subtitle: Builder(
+      builder: (_) {
+        final records = attendanceRepository
+            .attendanceForStudent(student.id);
+
+        final present = records.isNotEmpty &&
+            (records.last.status ==
+                AttendanceStatus.present ||
+                records.last.status ==
+                    AttendanceStatus.late);
+
+        return Text(
+          present
+              ? '🟢 Present Today'
+              : '🔴 Absent / Not Marked',
+        );
+      },
     ),
     trailing: const Icon(
       Icons.arrow_forward_ios,
